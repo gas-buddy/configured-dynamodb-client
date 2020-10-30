@@ -23,6 +23,10 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+    - name: Setup fake AWS creds
+      run: |
+        mkdir -p ~/.aws
+        printf "[default]\naws_access_key_id=fake\naws_secret_access_key=fake" > ~/.aws/credentials
     - name: npm install, lint, build, and test
       run: |
         npm config set '//registry.npmjs.org/:_authToken' "${NPM_TOKEN}"
@@ -32,5 +36,4 @@ jobs:
         npm test
       env:
         NPM_TOKEN: ${{secrets.npm_token}}
-        AWS_SESSION_TOKEN: fake_session_token
         CI: true

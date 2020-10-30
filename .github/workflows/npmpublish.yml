@@ -19,11 +19,13 @@ jobs:
         with:
           node-version: 10
       - run: |
+          mkdir -p ~/.aws
+          printf "[default]\naws_access_key_id=fake\naws_secret_access_key=fake" > ~/.aws/credentials
+      - run: |
           npm config set '//registry.npmjs.org/:_authToken' "${NPM_TOKEN}"
           npm ci
         env:
           NPM_TOKEN: ${{secrets.npm_token}}
-          AWS_SESSION_TOKEN: fake_session_token
       - run: npm run lint
       - run: npm test
       - run: npm run build
