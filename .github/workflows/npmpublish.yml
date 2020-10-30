@@ -28,6 +28,8 @@ jobs:
           NPM_TOKEN: ${{secrets.npm_token}}
       - run: npm run lint
       - run: npm test
+        env:
+          NODE_ENV: test
       - run: npm run build
 
   publish-npm:
