@@ -46,7 +46,7 @@ tap.test('test_basic_operations', async (t) => {
       KeySchema: [
         {
           AttributeName: 'trip_taker_guid',
-          KeyType: 'HASH'
+          KeyType: 'HASH',
         },
         {
           AttributeName: 'date_and_trip_guid',
