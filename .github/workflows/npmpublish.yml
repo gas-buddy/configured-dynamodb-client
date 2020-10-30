@@ -9,10 +9,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     services:
-      sqs-mock:
-        image: gasbuddy/sns-mock
+      dynamodb:
+        image: amazon/dynamodb-local
         ports:
-          - 9911:9911
+          - 8000:8000
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
@@ -23,6 +23,7 @@ jobs:
           npm ci
         env:
           NPM_TOKEN: ${{secrets.npm_token}}
+          AWS_SESSION_TOKEN: fake_session_token
       - run: npm run lint
       - run: npm test
       - run: npm run build
