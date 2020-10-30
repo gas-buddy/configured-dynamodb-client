@@ -2,9 +2,16 @@
 import tap from 'tap';
 import DynamoDbClient from '../src';
 
+const testConfig = process.env.NODE_ENV === 'test' ? {
+  endpoint: 'http://localhost:8000',
+  accessKeyId: 'key',
+  secretAccessKey: 'secret',
+  sessionToken: 'token',
+} : {};
+
 const qConfig = {
   region: 'us-east-1',
-  endpoint: process.env.NODE_ENV === 'test' ? 'http://localhost:8000' : undefined,
+  ...testConfig,
 };
 
 const ctx = {
