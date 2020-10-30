@@ -5,6 +5,9 @@ import DynamoDbClient from '../src';
 const testConfig = process.env.NODE_ENV === 'test' ? {
   region: 'local',
   endpoint: 'http://localhost:8000',
+  accessKeyId: 'key',
+  secretAccessKey: 'secret',
+  sessionToken: 'token',
 } : {};
 
 const qConfig = {
