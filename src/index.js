@@ -26,6 +26,10 @@ export default class ConfiguredDynamoDbClient extends EventEmitter {
     return this.documentClient.get(params).promise();
   }
 
+  async batch(context, params: DynamoDB.DocumentClient.BatchGetItemInput) {
+    return this.documentClient.batchGet(params).promise();
+  }
+
   async query(context, params: DynamoDB.DocumentClient.QueryInput) {
     return this.documentClient.query(params).promise();
   }

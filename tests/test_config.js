@@ -47,6 +47,10 @@ tap.test('test_basic_operations', async (t) => {
           AttributeName: 'date_and_trip_guid',
           AttributeType: 'S',
         },
+        {
+          AttributeName: 'trip_id',
+          AttributeType: 'S',
+        },
       ],
       KeySchema: [
         {
@@ -58,19 +62,36 @@ tap.test('test_basic_operations', async (t) => {
           KeyType: 'RANGE',
         },
       ],
+      GlobalSecondaryIndexes: [
+        {
+          IndexName: 'trips_by_id',
+          KeySchema: [{ AttributeName: 'trip_id', KeyType: 'HASH' }],
+          Projection: { ProjectionType: 'KEYS_ONLY' },
+          ProvisionedThroughput: {
+            ReadCapacityUnits: 1,
+            WriteCapacityUnits: 1,
+          },
+        },
+      ],
       ProvisionedThroughput: {
         ReadCapacityUnits: 1,
         WriteCapacityUnits: 1,
       },
       TableName: 'trips',
     };
-    await dynamoDb.client.createTable(tableParams).promise().catch(() => {});
+    await dynamoDb.client.createTable(tableParams).promise().catch((error) => {
+      if (error.code !== 'ResourceInUseException') {
+        // eslint-disable-next-line no-console
+        console.error('Table creation failed', error);
+      }
+    });
   }
 
   let doc = await dynamoDb.put(ctx, {
     TableName: TripItem.TableName,
     Item: {
       ...TripItem.Key,
+      trip_id: 'test-trip-id',
       this: 'is',
       a: 'test',
       really: true,
@@ -88,6 +109,14 @@ tap.test('test_basic_operations', async (t) => {
     },
   });
   t.equals(docs?.Items?.length, 1, 'Should get 1 item');
+  docs = await dynamoDb.query(ctx, {
+    TableName: TripItem.TableName,
+    IndexName: 'trips_by_id',
+    KeyConditionExpression: 'trip_id = :trip_id',
+    ExpressionAttributeValues: { ':trip_id': 'test-trip-id' },
+  });
+  t.equals(docs?.Items?.length, 1, 'Should get 1 item');
+  t.equals(docs?.Items?.[0]?.date_and_trip_guid, TripItem.Key.date_and_trip_guid, 'Should match');
   docs = await dynamoDb.query(ctx, {
     TableName: TripItem.TableName,
     KeyConditionExpression: 'trip_taker_guid = :trip_taker_guid AND begins_with (date_and_trip_guid, :date)',
