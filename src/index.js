@@ -41,4 +41,8 @@ export default class ConfiguredDynamoDbClient extends EventEmitter {
   async delete(context, params: DynamoDB.DocumentClient.DeleteItemInput) {
     return this.documentClient.delete(params).promise();
   }
+
+  async update(context, params: DynamoDB.DocumentClient.UpdateItemInput) {
+    return this.documentClient.update(params).promise();
+  }
 }
